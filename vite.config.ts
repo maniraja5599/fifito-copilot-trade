@@ -113,6 +113,58 @@ function localScreenshotsPlugin() {
         res.end(JSON.stringify({ key: key || null }));
       });
 
+      server.middlewares.use("/api/angelone/test-login", async (_req, res) => {
+        try {
+          const apiKey = process.env.ANGELONE_API_KEY?.trim() ?? "";
+          const clientCode = process.env.ANGELONE_CLIENT_CODE?.trim() ?? "";
+          const password = process.env.ANGELONE_PASSWORD?.trim() ?? "";
+          const totpSecret = process.env.ANGELONE_TOTP_SECRET?.trim() ?? "";
+
+          // Generate TOTP inline for debug
+          const { createHmac } = await import("crypto");
+          function base32Decode(input: string): Buffer {
+            const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            const clean = input.toUpperCase().replace(/=+$/, "");
+            let bits = 0, value = 0;
+            const bytes: number[] = [];
+            for (const c of clean) {
+              const i = alpha.indexOf(c);
+              if (i === -1) continue;
+              value = (value << 5) | i; bits += 5;
+              if (bits >= 8) { bytes.push((value >>> (bits - 8)) & 0xff); bits -= 8; }
+            }
+            return Buffer.from(bytes);
+          }
+          const key = base32Decode(totpSecret);
+          const counter = Math.floor(Date.now() / 1000 / 30);
+          const buf = Buffer.alloc(8);
+          buf.writeUInt32BE(Math.floor(counter / 0x100000000), 0);
+          buf.writeUInt32BE(counter >>> 0, 4);
+          const hmac = createHmac("sha1", key).update(buf).digest();
+          const offset = hmac[hmac.length - 1] & 0x0f;
+          const code = ((hmac[offset] & 0x7f) << 24) | (hmac[offset+1] << 16) | (hmac[offset+2] << 8) | hmac[offset+3];
+          const totp = String(code % 1_000_000).padStart(6, "0");
+
+          const raw = await fetch("https://apiconnect.angelone.in/rest/auth/angelbroking/user/v1/loginByPassword", {
+            method: "POST",
+            headers: {
+              Accept: "application/json", "Content-Type": "application/json",
+              "X-UserType": "USER", "X-SourceID": "WEB", "X-PrivateKey": apiKey,
+            },
+            body: JSON.stringify({ clientcode: clientCode, password, totp }),
+          });
+          const rawText = await raw.text().catch(() => "");
+          let payload: unknown = null;
+          try { payload = JSON.parse(rawText); } catch { payload = rawText; }
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ httpStatus: raw.status, totp, payload, headers: Object.fromEntries(raw.headers.entries()) }));
+        } catch (err) {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }));
+        }
+      });
+
       server.middlewares.use("/api/telegram/status", (_req, res) => {
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify(getTelegramStatus()));

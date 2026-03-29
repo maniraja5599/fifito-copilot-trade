@@ -330,6 +330,10 @@ async function angelRequest(
       "X-UserType": "USER",
       "X-SourceID": "WEB",
       "X-PrivateKey": apiKey,
+      "User-Agent": "Mozilla/5.0",
+      "X-ClientLocalIP": process.env.ANGELONE_CLIENT_LOCAL_IP?.trim() || "192.168.1.50",
+      "X-ClientPublicIP": process.env.ANGELONE_CLIENT_PUBLIC_IP?.trim() || "61.2.75.161",
+      "X-MACaddress": process.env.ANGELONE_MAC_ADDRESS?.trim() || "80-B6-55-45-3C-06",
       ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
     },
     body: JSON.stringify(body),
@@ -337,7 +341,9 @@ async function angelRequest(
 
   const payload = await response.json().catch(() => null);
   if (!response.ok || payload?.status === false) {
-    throw new Error(payload?.message || `Angel One API error ${response.status}`);
+    const detail = [payload?.message, payload?.errorcode, payload?.error]
+      .filter(Boolean).join(" | ");
+    throw new Error(detail || `Angel One API error ${response.status} on ${route}`);
   }
 
   return payload;

@@ -12,7 +12,17 @@
       "Bash(powershell.exe -Command \"schtasks /create /tn ''FiFTO Copilot Trade'' /tr ''c:\\\\Users\\\\manir\\\\Desktop\\\\backtest\\\\nifty-option-selling-analysis\\\\start-server.bat'' /sc onlogon /ru manir /delay 0000:30 /f\")",
       "Bash(powershell.exe -Command \"Copy-Item ''c:\\\\Users\\\\manir\\\\Desktop\\\\backtest\\\\nifty-option-selling-analysis\\\\start-server.bat'' -Destination ''C:\\\\Users\\\\manir\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\FiFTO-Copilot-Trade.bat''\")",
       "Bash(powershell.exe -Command \"Test-Path ''C:\\\\Users\\\\manir\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\FiFTO-Copilot-Trade.bat''\")",
-      "Bash(curl -s http://localhost:8000/api/angelone/status)"
+      "Bash(curl -s http://localhost:8000/api/angelone/status)",
+      "Bash(curl -s -X POST http://localhost:8000/api/angelone/order -H \"Content-Type: application/json\" -d \"{\"\"signal\"\":{\"\"action\"\":\"\"SELL CE\"\",\"\"entry\"\":\"\"24400\"\",\"\"confidenceLevel\"\":75},\"\"mode\"\":\"\"preview\"\",\"\"lots\"\":1}\")",
+      "Bash(curl -s -X POST http://localhost:8000/api/angelone/order -H \"Content-Type: application/json\" -d \"{\"\"signal\"\":{\"\"action\"\":\"\"SELL CE\"\",\"\"entry\"\":\"\"24400\"\",\"\"confidenceLevel\"\":75},\"\"mode\"\":\"\"live\"\",\"\"lots\"\":1}\")",
+      "Bash(curl -s http://localhost:8000/api/angelone/test-login)",
+      "Bash(powershell.exe -Command \"Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_IPAddress -notlike ''127.*''} | Select-Object IPAddress; \\(Get-NetAdapter | Where-Object {$_Status -eq ''Up''} | Select-Object -First 1\\).MacAddress\")",
+      "Bash(powershell.exe -Command \"ipconfig | findstr /i ''IPv4''\")",
+      "Bash(powershell.exe -Command \"getmac /fo csv /nh\")",
+      "Bash(curl -s https://api.ipify.org)",
+      "Bash(curl -s -X POST \"https://apiconnect.angelone.in/rest/auth/angelbroking/user/v1/loginByPassword\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"X-UserType: USER\" -H \"X-SourceID: WEB\" -H \"X-PrivateKey: NE83ZEA3\" -H \"X-ClientLocalIP: 192.168.1.50\" -H \"X-ClientPublicIP: 61.2.75.161\" -H \"X-MACaddress: 80-B6-55-45-3C-06\" -d \"{\"\"clientcode\"\":\"\"DIYD12021\"\",\"\"password\"\":\"\"5599\"\",\"\"totp\"\":\"\"123456\"\"}\" -v)",
+      "Bash(curl -s -X POST \"https://apiconnect.angelone.in/rest/auth/angelbroking/user/v1/loginByPassword\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"X-UserType: USER\" -H \"X-SourceID: WEB\" -H \"X-PrivateKey: NE83ZEA3\" -H \"X-ClientLocalIP: 192.168.1.50\" -H \"X-ClientPublicIP: 61.2.75.161\" -H \"X-MACaddress: 80-B6-55-45-3C-06\" -d \"{\"\"clientcode\"\":\"\"DIYD12021\"\",\"\"password\"\":\"\"5599\"\",\"\"totp\"\":\"\"123456\"\"}\")",
+      "Bash(curl -s -X POST \"https://apiconnect.angelone.in/rest/auth/angelbroking/user/v1/loginByPassword\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"User-Agent: Mozilla/5.0\" -H \"X-UserType: USER\" -H \"X-SourceID: WEB\" -H \"X-PrivateKey: NE83ZEA3\" -H \"X-ClientLocalIP: 192.168.1.50\" -H \"X-ClientPublicIP: 61.2.75.161\" -H \"X-MACaddress: 80-B6-55-45-3C-06\" -d \"{\"\"clientcode\"\":\"\"DIYD12021\"\",\"\"password\"\":\"\"5599\"\",\"\"totp\"\":\"\"022607\"\"}\")"
     ]
   }
 }
