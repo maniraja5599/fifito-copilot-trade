@@ -1,5 +1,6 @@
 import path from "path";
 import { createHmac } from "crypto";
+import https from "https";
 import { sendTelegramMessage, formatOrderMessage, getTelegramStatus } from "./telegram";
 
 const ANGEL_API_ROOT = "https://apiconnect.angelone.in";
@@ -321,32 +322,46 @@ async function angelRequest(
   apiKey: string,
   body: Record<string, string>,
   jwtToken?: string,
-) {
-  const response = await fetch(`${ANGEL_API_ROOT}${route}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-UserType": "USER",
-      "X-SourceID": "WEB",
-      "X-PrivateKey": apiKey,
-      "User-Agent": "Mozilla/5.0",
-      "X-ClientLocalIP": process.env.ANGELONE_CLIENT_LOCAL_IP?.trim() || "192.168.1.50",
-      "X-ClientPublicIP": process.env.ANGELONE_CLIENT_PUBLIC_IP?.trim() || "61.2.75.161",
-      "X-MACaddress": process.env.ANGELONE_MAC_ADDRESS?.trim() || "80-B6-55-45-3C-06",
-      ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
-    },
-    body: JSON.stringify(body),
+): Promise<unknown> {
+  const bodyStr = JSON.stringify(body);
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "Content-Length": String(Buffer.byteLength(bodyStr)),
+    "User-Agent": "Mozilla/5.0",
+    "X-UserType": "USER",
+    "X-SourceID": "WEB",
+    "X-PrivateKey": apiKey,
+    "X-ClientLocalIP": process.env.ANGELONE_CLIENT_LOCAL_IP?.trim() || "192.168.1.50",
+    "X-ClientPublicIP": process.env.ANGELONE_CLIENT_PUBLIC_IP?.trim() || "61.2.75.161",
+    "X-MACaddress": process.env.ANGELONE_MAC_ADDRESS?.trim() || "80-B6-55-45-3C-06",
+    ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
+  };
+
+  return new Promise((resolve, reject) => {
+    const url = new URL(`${ANGEL_API_ROOT}${route}`);
+    const req = https.request(
+      { hostname: url.hostname, path: url.pathname, method: "POST", headers },
+      (res) => {
+        let raw = "";
+        res.on("data", (chunk) => { raw += chunk; });
+        res.on("end", () => {
+          let payload: unknown = null;
+          try { payload = JSON.parse(raw); } catch { /* empty body */ }
+          const p = payload as Record<string, unknown> | null;
+          if ((res.statusCode ?? 0) >= 400 || p?.status === false) {
+            const detail = [p?.message, p?.errorcode, p?.error].filter(Boolean).join(" | ");
+            reject(new Error(String(detail || `Angel One API error ${res.statusCode} on ${route}`)));
+          } else {
+            resolve(payload);
+          }
+        });
+      },
+    );
+    req.on("error", reject);
+    req.write(bodyStr);
+    req.end();
   });
-
-  const payload = await response.json().catch(() => null);
-  if (!response.ok || payload?.status === false) {
-    const detail = [payload?.message, payload?.errorcode, payload?.error]
-      .filter(Boolean).join(" | ");
-    throw new Error(detail || `Angel One API error ${response.status} on ${route}`);
-  }
-
-  return payload;
 }
 
 function parseSpotFromText(value: string): number {
