@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-dark-900: #0a0e17;
+  --color-dark-800: #0f1423;
+  --color-dark-700: #151b2e;
+  --color-dark-600: #1c2440;
+  --color-dark-500: #243052;
+  --color-neon-green: #00ff88;
+  --color-neon-red: #ff3366;
+  --color-neon-blue: #00aaff;
+  --color-neon-yellow: #ffcc00;
+  --color-neon-purple: #aa55ff;
+}
+
+body {
+  background-color: #0a0e17;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1423;
+}
+::-webkit-scrollbar-thumb {
+  background: #243052;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2d3b66;
+}
+
+/* Glow effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 60px rgba(0, 255, 136, 0.1);
+}
+.glow-red {
+  box-shadow: 0 0 20px rgba(255, 51, 102, 0.3), 0 0 60px rgba(255, 51, 102, 0.1);
+}
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.3), 0 0 60px rgba(0, 170, 255, 0.1);
+}
+
+/* Pulse animation */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+.animate-scan {
+  animation: scan-line 2s linear infinite;
+}
+
+/* Upload zone styles */
+.upload-zone {
+  border: 2px dashed #243052;
+  transition: all 0.3s ease;
+}
+.upload-zone:hover {
+  border-color: #00aaff;
+  background-color: rgba(0, 170, 255, 0.05);
+}
+.upload-zone.active {
+  border-color: #00ff88;
+  background-color: rgba(0, 255, 136, 0.05);
+}
+.upload-zone.has-image {
+  border-color: #00ff88;
+  border-style: solid;
+}

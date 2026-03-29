@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files — never commit real credentials
+.env.local
+.env.*.local
+
+# Logs
+*.log
+vite-dev*.log
+vite-dev*.err.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

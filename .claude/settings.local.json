@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s http://localhost:5173/api/angelone/status)",
+      "Bash(curl -s http://localhost:5173/api/openai/key)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''OpenAI key present:'''', bool\\(d.get\\(''''key''''\\)\\)\\)\")",
+      "Bash(curl -s http://localhost:5173/api/telegram/status)",
+      "Bash(cmd.exe /c \"schtasks /create /tn \"\"FiFTO Copilot Trade\"\" /tr \"\"c:\\\\Users\\\\manir\\\\Desktop\\\\backtest\\\\nifty-option-selling-analysis\\\\start-server.bat\"\" /sc onlogon /ru manir /delay 0000:30 /f\")",
+      "Bash(powershell.exe -Command \"schtasks /create /tn ''FiFTO Copilot Trade'' /tr ''c:\\\\Users\\\\manir\\\\Desktop\\\\backtest\\\\nifty-option-selling-analysis\\\\start-server.bat'' /sc onlogon /ru manir /delay 0000:30 /f\")",
+      "Bash(powershell.exe -Command \"Copy-Item ''c:\\\\Users\\\\manir\\\\Desktop\\\\backtest\\\\nifty-option-selling-analysis\\\\start-server.bat'' -Destination ''C:\\\\Users\\\\manir\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\FiFTO-Copilot-Trade.bat''\")",
+      "Bash(powershell.exe -Command \"Test-Path ''C:\\\\Users\\\\manir\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Startup\\\\FiFTO-Copilot-Trade.bat''\")",
+      "Bash(curl -s http://localhost:8000/api/angelone/status)"
+    ]
+  }
+}
